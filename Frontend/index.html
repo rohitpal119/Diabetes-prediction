@@ -108,7 +108,7 @@
     <script>
         async function predictDiabetes() {
             const features = [...document.querySelectorAll("input")].map(input => parseFloat(input.value));
-            const response = await fetch("https://diabetes-prediction-b6co.onrender.com", {
+            const response = await fetch("https://diabetes-prediction-b6co.onrender.com/predict", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ "features": features })
