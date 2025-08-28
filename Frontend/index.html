@@ -5,23 +5,44 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Diabetes Prediction for Women</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body {
-            background-color: #ffe4e6;
+        :root {
+            --primary: #ec4899;
+            --primary-dark: #db2777;
+            --secondary: #3b82f6;
+            --light: #fdf2f8;
+            --dark: #831843;
         }
+        
+        body {
+            background-color: #fdf2f8;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%);
+        }
+        
+        .nav-bg {
+            background: rgba(236, 72, 153, 0.95);
+            backdrop-filter: blur(10px);
+        }
+        
         .tooltip {
             position: relative;
             display: inline-block;
             cursor: pointer;
         }
+        
         .tooltip .tooltiptext {
             visibility: hidden;
             width: 160px;
-            background-color: black;
+            background-color: #1f2937;
             color: #fff;
             text-align: center;
             border-radius: 6px;
-            padding: 5px;
+            padding: 8px;
             position: absolute;
             z-index: 1;
             bottom: 125%;
@@ -29,18 +50,22 @@
             transform: translateX(-50%);
             opacity: 0;
             transition: opacity 0.3s;
+            font-size: 0.875rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
+        
         .tooltip:hover .tooltiptext {
             visibility: visible;
             opacity: 1;
         }
+        
         .popup {
             display: none;
             position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 50%;
+            width: 80%;
             max-width: 500px;
             padding: 30px;
             border-radius: 15px;
@@ -48,76 +73,493 @@
             font-size: 1.5rem;
             font-weight: bold;
             box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+            z-index: 1000;
+            animation: popIn 0.5s ease-out;
         }
+        
+        @keyframes popIn {
+            0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0; }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        }
+        
         .popup.diabetic {
-            background-color: #ff4d4d;
-            color: white;
-            border: 5px solid #ff0000;
+            background-color: #fef2f2;
+            color: #dc2626;
+            border: 3px solid #fecaca;
         }
+        
         .popup.non-diabetic {
-            background-color: #4caf50;
+            background-color: #f0fdf4;
+            color: #16a34a;
+            border: 3px solid #bbf7d0;
+        }
+        
+        .feature-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        
+        .back-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--primary);
             color: white;
-            border: 5px solid #008000;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(236, 72, 153, 0.3);
+            transition: all 0.3s ease;
+            z-index: 99;
+        }
+        
+        .back-to-top:hover {
+            background: var(--primary-dark);
+            transform: translateY(-3px);
+        }
+        
+        .input-field {
+            transition: all 0.3s ease;
+            border: 2px solid #fbcfe8;
+        }
+        
+        .input-field:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.2);
+        }
+        
+        .predict-btn {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            transition: all 0.3s ease;
+        }
+        
+        .predict-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(236, 72, 153, 0.25);
+        }
+        
+        .section-title {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 2rem;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 4px;
+            background: var(--primary);
+            border-radius: 2px;
+        }
+        
+        .hero-image {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .about-image {
+            width: 100%;
+            height: 350px;
+            object-fit: cover;
+            border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
         }
     </style>
 </head>
 <body class="flex flex-col min-h-screen">
-    <nav class="bg-pink-500 p-4 text-white text-center text-lg font-bold">Diabetes Prediction for Women</nav>
-    
-    <main class="flex flex-col items-center justify-center flex-grow p-5">
-        <div class="bg-white shadow-lg rounded-lg p-8 max-w-lg w-full text-center">
-            <h2 class="text-3xl font-bold text-pink-600">Diabetes Prediction for Women</h2>
-            <p class="text-gray-600">Enter the following details to check your diabetes risk.</p>
+    <!-- Navigation Bar -->
+    <nav class="nav-bg p-4 text-white fixed w-full top-0 z-50 shadow-md">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="#" class="text-xl font-bold flex items-center">
+                <i class="fas fa-heart-pulse mr-2"></i> DiaPredict
+            </a>
             
-            <form id="predictForm" class="mt-4">
-                <div class="grid grid-cols-1 gap-4">
-                    <label class="text-gray-700">Pregnancies (0-17) <span class="tooltip">❓<span class="tooltiptext">Number of times you have been pregnant.</span></span></label>
-                    <input type="number" id="f1" min="0" max="17" placeholder="E.g., 2" class="border p-2 rounded w-full" required>
-                    
-                    <label class="text-gray-700">Glucose Level (0-200 mg/dL) <span class="tooltip">❓<span class="tooltiptext">Blood sugar level after fasting.</span></span></label>
-                    <input type="number" id="f2" min="0" max="200" placeholder="E.g., 120" class="border p-2 rounded w-full" required>
-                    
-                    <label class="text-gray-700">Blood Pressure (0-122 mm Hg) <span class="tooltip">❓<span class="tooltiptext">Your diastolic blood pressure.</span></span></label>
-                    <input type="number" id="f3" min="0" max="122" placeholder="E.g., 80" class="border p-2 rounded w-full" required>
-                    
-                    <label class="text-gray-700">Skin Thickness (0-99 mm) <span class="tooltip">❓<span class="tooltiptext">Thickness of skin fold at triceps.</span></span></label>
-                    <input type="number" id="f4" min="0" max="99" placeholder="E.g., 23" class="border p-2 rounded w-full" required>
-                    
-                    <label class="text-gray-700">Insulin Level (0-846 mu U/ml) <span class="tooltip">❓<span class="tooltiptext">Insulin concentration in blood.</span></span></label>
-                    <input type="number" id="f5" min="0" max="846" placeholder="E.g., 79" class="border p-2 rounded w-full" required>
-                    
-                    <label class="text-gray-700">BMI (0-67 kg/m²) <span class="tooltip">❓<span class="tooltiptext">Body Mass Index: weight(kg)/height(m²).</span></span></label>
-                    <input type="number" id="f6" min="0" max="67" step="0.1" placeholder="E.g., 25.6" class="border p-2 rounded w-full" required>
-                    
-                    <label class="text-gray-700">Diabetes Pedigree Function (0.078-2.42) <span class="tooltip">❓<span class="tooltiptext">Genetic likelihood of diabetes.</span></span></label>
-                    <input type="number" id="f7" min="0.078" max="2.42" step="0.001" placeholder="E.g., 0.627" class="border p-2 rounded w-full" required>
-                    
-                    <label class="text-gray-700">Age (21-81 years) <span class="tooltip">❓<span class="tooltiptext">Your age in years.</span></span></label>
-                    <input type="number" id="f8" min="21" max="81" placeholder="E.g., 35" class="border p-2 rounded w-full" required>
+            <div class="hidden md:flex space-x-6">
+                <a href="#" class="hover:text-pink-200 transition">Home</a>
+                <a href="#predict" class="hover:text-pink-200 transition">Predict</a>
+                <a href="#about" class="hover:text-pink-200 transition">About</a>
+                <a href="#parameters" class="hover:text-pink-200 transition">Parameters</a>
+            </div>
+            
+            <div class="md:hidden">
+                <button id="mobile-menu-button" class="text-white">
+                    <i class="fas fa-bars text-2xl"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden mt-4 pb-4">
+            <div class="flex flex-col space-y-3 px-4">
+                <a href="#" class="hover:text-pink-200 transition">Home</a>
+                <a href="#predict" class="hover:text-pink-200 transition">Predict</a>
+                <a href="#about" class="hover:text-pink-200 transition">About</a>
+                <a href="#parameters" class="hover:text-pink-200 transition">Parameters</a>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Hero Section -->
+    <section class="gradient-bg pt-32 pb-20 px-5">
+        <div class="container mx-auto flex flex-col md:flex-row items-center">
+            <div class="md:w-1/2 mb-10 md:mb-0">
+                <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-6">Take Control of Your Health with Diabetes Prediction</h1>
+                <p class="text-lg text-gray-700 mb-8">Early detection of diabetes can help prevent complications. Our AI-powered prediction tool helps women assess their risk factors and take proactive steps towards better health.</p>
+                <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+                    <a href="#predict" class="bg-pink-500 hover:bg-pink-600 text-white font-medium py-3 px-6 rounded-lg transition shadow-md text-center">Check Your Risk Now</a>
+                    <a href="#about" class="border-2 border-pink-500 text-pink-600 hover:bg-pink-50 font-medium py-3 px-6 rounded-lg transition text-center">Learn More</a>
+                </div>
+            </div>
+            <div class="md:w-1/2 flex justify-center">
+                <div class="bg-white p-6 rounded-2xl shadow-xl max-w-md">
+                    <img src="assets/hero.png" alt="Women's health illustration" class="hero-image">
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Stats Section -->
+    <section class="py-16 bg-white">
+        <div class="container mx-auto px-5">
+            <h2 class="text-3xl font-bold text-center text-gray-800 mb-16 section-title">Why Diabetes Awareness Matters</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="stat-card text-center">
+                    <div class="text-pink-500 text-4xl mb-4">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">1 in 10 Women</h3>
+                    <p class="text-gray-600">are affected by diabetes worldwide, with many undiagnosed.</p>
                 </div>
                 
-                <button type="button" onclick="predictDiabetes()" class="mt-4 bg-pink-500 text-white px-4 py-2 rounded hover:bg-pink-700">Predict</button>
-            </form>
+                <div class="stat-card text-center">
+                    <div class="text-pink-500 text-4xl mb-4">
+                        <i class="fas fa-baby"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">Gestational Diabetes</h3>
+                    <p class="text-gray-600">affects 2-10% of pregnancies and increases future diabetes risk.</p>
+                </div>
+                
+                <div class="stat-card text-center">
+                    <div class="text-pink-500 text-4xl mb-4">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">Early Detection</h3>
+                    <p class="text-gray-600">can reduce complications by up to 50% with proper management.</p>
+                </div>
+            </div>
         </div>
-    </main>
+    </section>
     
-    <footer class="bg-pink-500 p-4 text-white text-center mt-4">&copy; 2025 Diabetes Prediction System</footer>
+    <!-- Prediction Form Section -->
+    <section id="predict" class="py-16 bg-gray-50">
+        <div class="container mx-auto px-5 max-w-4xl">
+            <h2 class="text-3xl font-bold text-center text-gray-800 mb-4 section-title">Diabetes Risk Assessment</h2>
+            <p class="text-center text-gray-600 mb-10 max-w-2xl mx-auto">Fill in your health information below to assess your diabetes risk. All information is kept private and secure.</p>
+            
+            <div class="bg-white shadow-lg rounded-xl p-6 md:p-8">
+                <form id="predictForm">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="text-gray-700 font-medium mb-2 block">Pregnancies (0-17) <span class="tooltip"><i class="fas fa-question-circle text-pink-500"></i><span class="tooltiptext">Number of times you have been pregnant.</span></span></label>
+                            <input type="number" id="f1" min="0" max="17" placeholder="E.g., 2" class="input-field p-3 rounded-lg w-full" required>
+                        </div>
+                        
+                        <div>
+                            <label class="text-gray-700 font-medium mb-2 block">Glucose Level (0-200 mg/dL) <span class="tooltip"><i class="fas fa-question-circle text-pink-500"></i><span class="tooltiptext">Blood sugar level after fasting.</span></span></label>
+                            <input type="number" id="f2" min="0" max="200" placeholder="E.g., 120" class="input-field p-3 rounded-lg w-full" required>
+                        </div>
+                        
+                        <div>
+                            <label class="text-gray-700 font-medium mb-2 block">Blood Pressure (0-122 mm Hg) <span class="tooltip"><i class="fas fa-question-circle text-pink-500"></i><span class="tooltiptext">Your diastolic blood pressure.</span></span></label>
+                            <input type="number" id="f3" min="0" max="122" placeholder="E.g., 80" class="input-field p-3 rounded-lg w-full" required>
+                        </div>
+                        
+                        <div>
+                            <label class="text-gray-700 font-medium mb-2 block">Skin Thickness (0-99 mm) <span class="tooltip"><i class="fas fa-question-circle text-pink-500"></i><span class="tooltiptext">Thickness of skin fold at triceps.</span></span></label>
+                            <input type="number" id="f4" min="0" max="99" placeholder="E.g., 23" class="input-field p-3 rounded-lg w-full" required>
+                        </div>
+                        
+                        <div>
+                            <label class="text-gray-700 font-medium mb-2 block">Insulin Level (0-846 mu U/ml) <span class="tooltip"><i class="fas fa-question-circle text-pink-500"></i><span class="tooltiptext">Insulin concentration in blood.</span></span></label>
+                            <input type="number" id="f5" min="0" max="846" placeholder="E.g., 79" class="input-field p-3 rounded-lg w-full" required>
+                        </div>
+                        
+                        <div>
+                            <label class="text-gray-700 font-medium mb-2 block">BMI (0-67 kg/m²) <span class="tooltip"><i class="fas fa-question-circle text-pink-500"></i><span class="tooltiptext">Body Mass Index: weight(kg)/height(m²).</span></span></label>
+                            <input type="number" id="f6" min="0" max="67" step="0.1" placeholder="E.g., 25.6" class="input-field p-3 rounded-lg w-full" required>
+                        </div>
+                        
+                        <div>
+                            <label class="text-gray-700 font-medium mb-2 block">Diabetes Pedigree Function (0.078-2.42) <span class="tooltip"><i class="fas fa-question-circle text-pink-500"></i><span class="tooltiptext">Genetic likelihood of diabetes.</span></span></label>
+                            <input type="number" id="f7" min="0.078" max="2.42" step="0.001" placeholder="E.g., 0.627" class="input-field p-3 rounded-lg w-full" required>
+                        </div>
+                        
+                        <div>
+                            <label class="text-gray-700 font-medium mb-2 block">Age (21-81 years) <span class="tooltip"><i class="fas fa-question-circle text-pink-500"></i><span class="tooltiptext">Your age in years.</span></span></label>
+                            <input type="number" id="f8" min="21" max="81" placeholder="E.g., 35" class="input-field p-3 rounded-lg w-full" required>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-8 text-center">
+                        <button type="button" onclick="predictDiabetes()" class="predict-btn text-white font-medium py-3 px-8 rounded-lg text-lg">Assess My Risk</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+    
+    <!-- About Section -->
+    <section id="about" class="py-16 bg-white">
+        <div class="container mx-auto px-5">
+            <h2 class="text-3xl font-bold text-center text-gray-800 mb-4 section-title">About Diabetes in Women</h2>
+            <p class="text-center text-gray-600 mb-12 max-w-3xl mx-auto">Diabetes affects women differently than men, with unique risk factors and complications. Understanding these differences is key to prevention and management.</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
+                <div>
+                    <h3 class="text-2xl font-semibold text-gray-800 mb-4">Why Women Are at Risk</h3>
+                    <p class="text-gray-600 mb-6">Women face unique challenges when it comes to diabetes. Hormonal changes throughout a woman's life—during puberty, pregnancy, and menopause—can affect blood sugar levels and increase diabetes risk.</p>
+                    <p class="text-gray-600 mb-6">Gestational diabetes, which occurs during pregnancy, increases a woman's risk of developing type 2 diabetes later in life. Women with diabetes also have a higher risk of heart disease compared to men with diabetes.</p>
+                    <div class="bg-pink-50 border-l-4 border-pink-500 p-4 rounded">
+                        <p class="text-pink-700"><span class="font-semibold">Important:</span> This prediction tool is for informational purposes only and not a substitute for professional medical advice. Always consult with healthcare providers for proper diagnosis and treatment.</p>
+                    </div>
+                </div>
+                
+                <div class="flex justify-center">
+                    <div class="max-w-md">
+                        <img src="assets/about.png" alt="Woman with doctor" class="about-image">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Parameters Section -->
+    <section id="parameters" class="py-16 bg-gray-50">
+        <div class="container mx-auto px-5">
+            <h2 class="text-3xl font-bold text-center text-gray-800 mb-4 section-title">Prediction Parameters</h2>
+            <p class="text-center text-gray-600 mb-12 max-w-3xl mx-auto">Our prediction model uses these key health indicators to assess diabetes risk. Understanding what each parameter means can help you better manage your health.</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="feature-card bg-white p-6 rounded-xl shadow-md">
+                    <div class="text-pink-500 text-3xl mb-4">
+                        <i class="fas fa-baby"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">Pregnancies</h3>
+                    <p class="text-gray-600">The number of times you've been pregnant. Multiple pregnancies can increase diabetes risk.</p>
+                </div>
+                
+                <div class="feature-card bg-white p-6 rounded-xl shadow-md">
+                    <div class="text-pink-500 text-3xl mb-4">
+                        <i class="fas fa-tint"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">Glucose Level</h3>
+                    <p class="text-gray-600">Your blood sugar level after fasting. High levels may indicate insulin resistance.</p>
+                </div>
+                
+                <div class="feature-card bg-white p-6 rounded-xl shadow-md">
+                    <div class="text-pink-500 text-3xl mb-4">
+                        <i class="fas fa-heartbeat"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">Blood Pressure</h3>
+                    <p class="text-gray-600">Diastolic blood pressure reading. Hypertension is linked to diabetes risk.</p>
+                </div>
+                
+                <div class="feature-card bg-white p-6 rounded-xl shadow-md">
+                    <div class="text-pink-500 text-3xl mb-4">
+                        <i class="fas fa-ruler-combined"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">Skin Thickness</h3>
+                    <p class="text-gray-600">Triceps skinfold thickness. Measures body fat distribution which affects diabetes risk.</p>
+                </div>
+                
+                <div class="feature-card bg-white p-6 rounded-xl shadow-md">
+                    <div class="text-pink-500 text-3xl mb-4">
+                        <i class="fas fa-syringe"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">Insulin Level</h3>
+                    <p class="text-gray-600">Blood insulin concentration. High levels may indicate insulin resistance.</p>
+                </div>
+                
+                <div class="feature-card bg-white p-6 rounded-xl shadow-md">
+                    <div class="text-pink-500 text-3xl mb-4">
+                        <i class="fas fa-weight"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">BMI</h3>
+                    <p class="text-gray-600">Body Mass Index. Higher BMI is a significant risk factor for type 2 diabetes.</p>
+                </div>
+                
+                <div class="feature-card bg-white p-6 rounded-xl shadow-md">
+                    <div class="text-pink-500 text-3xl mb-4">
+                        <i class="fas fa-dna"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">Pedigree Function</h3>
+                    <p class="text-gray-600">Estimates genetic predisposition to diabetes based on family history.</p>
+                </div>
+                
+                <div class="feature-card bg-white p-6 rounded-xl shadow-md">
+                    <div class="text-pink-500 text-3xl mb-4">
+                        <i class="fas fa-birthday-cake"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">Age</h3>
+                    <p class="text-gray-600">Diabetes risk increases with age, especially after 45 years.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white pt-12 pb-8 px-5">
+        <div class="container mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+                <div>
+                    <h3 class="text-xl font-semibold mb-4">DiaPredict</h3>
+                    <p class="text-gray-400">A women's health initiative focused on diabetes awareness and early detection through AI-powered risk assessment.</p>
+                </div>
+                
+                <div>
+                    <h3 class="text-xl font-semibold mb-4">Quick Links</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Home</a></li>
+                        <li><a href="#predict" class="text-gray-400 hover:text-white transition">Risk Assessment</a></li>
+                        <li><a href="#about" class="text-gray-400 hover:text-white transition">About Diabetes</a></li>
+                        <li><a href="#parameters" class="text-gray-400 hover:text-white transition">Parameters</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-xl font-semibold mb-4">Contact</h3>
+                    <p class="text-gray-400 mb-2"><i class="fas fa-info-circle mr-2"></i> For medical advice, please consult a healthcare professional</p>
+                    <p class="text-gray-400"><i class="fas fa-exclamation-triangle mr-2"></i> This tool is for informational purposes only</p>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-700 pt-8 text-center text-gray-400">
+                <p>&copy; 2023 DiaPredict - Diabetes Prediction System. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
 
+    <!-- Back to Top Button -->
+    <div id="backToTop" class="back-to-top hidden">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+
+    <!-- Prediction Popup -->
     <div id="popup" class="popup"></div>
 
     <script>
+        // Mobile menu toggle
+        document.getElementById('mobile-menu-button').addEventListener('click', function() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        });
+        
+        // Back to top button
+        const backToTopButton = document.getElementById('backToTop');
+        
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                backToTopButton.classList.remove('hidden');
+            } else {
+                backToTopButton.classList.add('hidden');
+            }
+        });
+        
+        backToTopButton.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+        
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+                
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    // Close mobile menu if open
+                    document.getElementById('mobile-menu').classList.add('hidden');
+                    
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+        
+        // Prediction function
         async function predictDiabetes() {
             const features = [...document.querySelectorAll("input")].map(input => parseFloat(input.value));
-            const response = await fetch("https://diabetes-prediction-b6co.onrender.com/predict", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ "features": features })
-            });
-            const data = await response.json();
-            const popup = document.getElementById("popup");
-            popup.textContent = `Prediction: ${data.prediction}`;
-            popup.className = data.prediction === "Diabetic" ? "popup diabetic" : "popup non-diabetic";
+            
+            // Simple validation
+            const isValid = features.every(value => !isNaN(value));
+            if (!isValid) {
+                alert("Please fill in all fields with valid numbers.");
+                return;
+            }
+            
+            // Show loading state
+            const popup = document.getElementById('popup');
+            popup.textContent = "Analyzing your data...";
+            popup.className = "popup";
             popup.style.display = "block";
+            
+            try {
+                const response = await fetch("https://diabetes-prediction-b6co.onrender.com/predict", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ "features": features })
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Server response was not OK');
+                }
+                
+                const data = await response.json();
+                popup.textContent = `Prediction: ${data.prediction}`;
+                popup.className = data.prediction === "Diabetic" ? "popup diabetic" : "popup non-diabetic";
+                
+                // Add some advice based on prediction
+                setTimeout(() => {
+                    if (data.prediction === "Diabetic") {
+                        popup.textContent += "\nPlease consult a healthcare provider.";
+                    } else {
+                        popup.textContent += "\nMaintain a healthy lifestyle!";
+                    }
+                }, 1500);
+                
+            } catch (error) {
+                console.error('Prediction error:', error);
+                popup.textContent = "Error connecting to prediction service. Please try again later.";
+                popup.className = "popup diabetic";
+            }
+            
             setTimeout(() => popup.style.display = "none", 5000);
         }
     </script>
